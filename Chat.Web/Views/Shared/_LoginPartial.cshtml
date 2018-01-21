@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row heading">
+            <div class="col-sm-2 col-xs-2 heading-avatar">
+                <div class="heading-avatar-icon">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+                </div>
+            </div>
+            <div class="col-sm-2 col-xs-2  heading-dot  pull-right">
+                <a href="javascript:document.getElementById('logoutForm').submit()">
+                    <i class="fa fa-sign-out fa-2x  pull-right" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="col-sm-7 col-xs-7 heading-compose  pull-right text-center">
+                <small>Made with<i class="fa fa-heart" aria-hidden="true"></i>by <strong>Ivan Grgurina</strong></small>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="row heading">
+        <div class="col-sm-3 col-xs-3 heading-avatar">
+            <div class="heading-avatar-icon">
+                <img src="https://bootdey.com/img/Content/avatar/avatar1.png">
+            </div>
+        </div>
+        <div class="col-sm-2 col-xs-2  heading-compose  pull-right">
+            <a href="@Url.Action("Register", "Account")" id="registerLink">
+                <i class="fa fa-user-plus fa-2x  pull-right" aria-hidden="true"></i>
+            </a>
+        </div>
+        <div class="col-sm-2 col-xs-2 heading-dot  pull-right">
+            <a href="@Url.Action("Login", "Account")" id="loginLink">
+                <i class="fa fa-sign-in fa-2x  pull-right" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+}

@@ -1,0 +1,195 @@
+﻿@using Microsoft.AspNet.Identity
+@model Chat.Web.Models.ChatViewModel
+@{
+    ViewBag.Title = "Group Chat";
+}
+
+<!-- foreach message in context.Messages -->
+
+<div class="row heading">
+    <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+        <div class="heading-avatar-icon">
+            <img src="https://bootdey.com/img/Content/avatar/avatar6.png">
+        </div>
+    </div>
+    <div class="col-sm-8 col-xs-7 heading-name">
+        <a class="heading-name-meta">
+            @ViewBag.Title
+        </a>
+        <span class="heading-online">Online</span>
+    </div>
+    <div class="col-sm-1 col-xs-1  heading-dot pull-right">
+        <i class="fa fa-ellipsis-v fa-2x  pull-right" aria-hidden="true"></i>
+    </div>
+</div>
+
+<div class="row message" id="discussion">
+    <div class="row message-previous">
+        <div class="col-sm-12 previous">
+            <a onclick="previous(this)" id="ankitjain28" name="20">
+                Show Previous Message!
+            </a>
+        </div>
+    </div>
+    @foreach (var item in Model.Messages)
+    {
+        if (item.Sender.Id == User.Identity.GetUserId())
+        {
+            <div class="row message-body">
+                <div class="col-sm-12 message-main-sender">
+                    <div class="sender">
+                        <div class="message-text">
+                            @Html.DisplayFor(modelItem => item.Content)
+                        </div>
+                        <span class="message-time pull-right">
+                            @Html.DisplayFor(modelItem => item.Sender.UserName)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row message-body">
+                <div class="col-sm-12 message-main-receiver">
+                    <div class="receiver">
+                        <div class="message-text">
+                            @Html.DisplayFor(modelItem => item.Content)
+                        </div>
+                        <span class="message-time pull-right">
+                            @Html.DisplayFor(modelItem => item.Sender.UserName)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+<!--<div class="container">
+    <input type="text" id="message" />
+    <input type="button" id="sendmessage" value="Send" />
+    <input type="hidden" id="displayname" />
+    <ul id="discussion"></ul>
+</div>-->
+
+
+<div class="row reply">
+    <div class="col-sm-1 col-xs-1 reply-emojis">
+        <i class="fa fa-smile-o fa-2x"></i>
+    </div>
+    <div class="col-sm-1 col-xs-1 reply-send">
+        <i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
+    </div>
+    <div class="col-sm-8 col-xs-8 reply-main">
+        <textarea class="form-control" rows="1" id="message"></textarea>
+    </div>
+    <div class="col-sm-2 col-xs-2 reply-recording">
+        <button id="sendmessage" class="btn btn-default" style="border: 0;">
+            <i class="fa fa-send fa-2x" aria-hidden="true">
+            </i>
+        </button>
+    </div>
+</div>
+
+@*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+    @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+<!-- foreach message in context.Messages -->
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.chatHub;
+            // Create a function that the hub can call to broadcast messages.
+            $.connection.chatHub.client.broadcastMessage = function (username, message) {
+                // Html encode display name and message. (optional - to prevent script injection)
+                var encodedName = $('<div />').text(username).html();
+                var encodedMsg = $('<div />').text(message).html();
+
+                var c = 'receiver';
+                if (username.includes('@User.Identity.Name') || username === '@User.Identity.Name') {
+                    c = 'sender';
+                }
+
+                // Add the message to the page.
+                $('#discussion').append('<div class="row message-body"><div class="col-sm-12 message-main-' + c +
+                    '"><div class="' + c +
+                    '"><div class="message-text">' + encodedMsg +
+                    '</div><span class="message-time pull-right">' + encodedName +
+                    '</span></div></div></div>');
+            };
+            // Get the user name and store it to prepend to messages.
+            //$('#displayname').val(prompt('Enter your name:', ''));
+            // Set initial focus to message input box.
+            $('#message').focus();
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                $('#sendmessage').click(function () {
+                    // Call the Send method on the hub.
+                    $.connection.chatHub.server.send('@User.Identity.GetUserId()', $('#message').val());
+                    // Clear text box and reset focus for next comment.
+                    $('#message').val('').focus();
+                });
+            });
+        });
+    </script>
+}
+
+@section SIDEBAR
+{
+    @if (Request.IsAuthenticated)
+    {
+        <div class="row searchBox">
+            @*<div class="col-sm-12 searchBox-inner">
+                    <div class="input-group has-feedback">
+                        <input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
+                        <span class="glyphicon glyphicon-search input-group-btn">
+
+                        </span>
+                    </div>
+                </div>*@
+            <div class="col-sm-12 searchBox-inner">
+                <div class="input-group has-feedback">
+                    <input id="searchText" type="text" class="form-control" name="searchText" placeholder="Search">
+                    <span class="input-group-btn" style="margin-top: -5px;">
+                        <button class="btn" style="margin-top: -5px;">
+                            <span class="glyphicon glyphicon-search" style="margin-top: -5px;"></span>
+                        </button>
+                    </span>
+                </div><!-- /input-group -->
+            </div>
+        </div>
+        <div class="row sideBar">
+            @foreach (var item in Model.Users)
+            {
+                <!-- foreach user in context.Users -->
+                <div class="row sideBar-body">
+                    <div class="col-sm-3 col-xs-3 sideBar-avatar">
+                        <div class="avatar-icon">
+                            <img src="@Html.Raw(item.Photo)">
+                        </div>
+                    </div>
+                    <div class="col-sm-9 col-xs-9 sideBar-main">
+                        <div class="row">
+                            <div class="col-sm-8 col-xs-8 sideBar-name">
+                                <span class="name-meta">
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                </span>
+                            </div>
+                            <div class="col-sm-4 col-xs-4 pull-right sideBar-time">
+                                <span class="time-meta pull-right">
+                                    18:18
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- foreach user in context.Users -->
+            }
+        </div>
+    }
+}
