@@ -167,7 +167,8 @@
             @foreach (var item in Model.Users)
             {
                 <!-- foreach user in context.Users -->
-                <div class="row sideBar-body">
+                <div class="row sideBar-body" style="@(item.Id == User.Identity.GetUserId() ? "background: #dcf8c6;" : "")">
+
                     <div class="col-sm-3 col-xs-3 sideBar-avatar">
                         <div class="avatar-icon">
                             <img src="@Html.Raw(item.Photo)">
